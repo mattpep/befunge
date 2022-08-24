@@ -6,6 +6,8 @@ end
 source_file = open(ARGV.shift)
 source = source_file.read.split("\n").map(&:chars)
 
+class BefungeError < StandardError; end
+
 stack = Array.new
 
 DIRECTIONS = {
@@ -36,6 +38,9 @@ while true
     print i
   when '1'..'9'
     stack << source[y][x].to_i
+  else
+    puts "row is #{source[y].join}"
+    raise BefungeError.new "Unimplemented operator: #{source[y][x].inspect}"
   end
 
   puts "    x:#{x}, y:#{y}: current character is #{source[y][x]} and direction is #{direction}, stack is #{stack} (string repr: #{stack.map{ |c| (0...256).include?(c) ? c.chr : 'X' }.join})"
