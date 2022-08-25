@@ -1,5 +1,5 @@
 if ARGV.length != 1
-  puts "#{$0} [options] <befunge.b93>"
+  STDERR.puts "#{$0} [options] <befunge.b93>"
   exit 1
 end
 
@@ -23,27 +23,27 @@ direction = :right
 
 
 while true
-  puts "Current location is #{x},#{y}"
+  STDERR.puts "Current location is #{x},#{y}"
   case source[y][x]
   when '<','v','>','^'
     direction = DIRECTIONS.invert[source[y][x]]
   when '?'
-    puts "  randdir"
+    STDERR.puts "  randdir"
     direction = DIRECTIONS.keys.sample
   when ' ',nil
     nil
   when '.'
-    puts "  printInt"
+    STDERR.puts "  printInt"
     i = stack.pop
     print i
   when '1'..'9'
     stack << source[y][x].to_i
   else
-    puts "row is #{source[y].join}"
+    STDERR.puts "row is #{source[y].join}"
     raise BefungeError.new "Unimplemented operator: #{source[y][x].inspect}"
   end
 
-  puts "    x:#{x}, y:#{y}: current character is #{source[y][x]} and direction is #{direction}, stack is #{stack} (string repr: #{stack.map{ |c| (0...256).include?(c) ? c.chr : 'X' }.join})"
+  STDERR.puts "    x:#{x}, y:#{y}: current character is #{source[y][x]} and direction is #{direction}, stack is #{stack} (string repr: #{stack.map{ |c| (0...256).include?(c) ? c.chr : 'X' }.join})"
 
   # move
   case direction
