@@ -127,7 +127,7 @@ while true
     when ','
       debug "  printChar"
       print stack.pop.chr
-    when '1'..'9'
+    when '0'..'9'
       stack << source[y][x].to_i
     else
       debug "row is #{source[y].join}"
