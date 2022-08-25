@@ -154,6 +154,13 @@ while true
       debug "  NOT"
       val = stack.pop
       stack << (val.zero? ? 1 : 0)
+    when '`'
+      debug "  gt"
+      debug "    stack is #{stack} (will take two values)"
+      a = stack.pop
+      b = stack.pop
+      debug "    got these two values: a:#{a}, b:#{b}"
+      stack << (b > a ? 1 : 0)
     when '+','-','*','/','%'
       op = source[y][x]
       debug "  op: #{op}"
