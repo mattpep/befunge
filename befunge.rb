@@ -92,6 +92,14 @@ while true
       debug "  printInt"
       i = stack.pop
       print i
+    when '+','-','*','/','%'
+      op = source[y][x]
+      debug "  op: #{op}"
+      debug "    stack is #{stack} (will take two values)"
+      a = stack.pop
+      b = stack.pop
+      debug "    got these two values: a:#{a}, b:#{b}"
+      stack << b.send(op.to_sym, a)
     when '@'
       debug "  EXIT"
       exit
