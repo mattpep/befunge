@@ -36,6 +36,25 @@ if ARGV.length != 1
   exit 1
 end
 
+class Array
+  def expand(width=80, height=25)
+    entries.map {|row| row + [' '] * (width - row.size) } + Array.new(height-entries.count) { [' '] * width }
+  end
+  def normalize(fill_char=' ')
+    max_row_size = entries.map(&:size).max
+    entries.map do |row|
+      deficit = max_row_size - row.size
+      row + [fill_char] * deficit
+    end
+  end
+  def normalize!(fill_char=' ')
+    replace normalize(fill_char)
+  end
+  def expand!(width=80, height=25)
+    replace expand(width, height)
+  end
+end
+
 source_file = open(ARGV.shift)
 source = source_file.read.split("\n").map(&:chars)
 
@@ -43,6 +62,9 @@ class BefungeError < StandardError; end
 
 stack = Array.new
 string_mode = false
+bridge = false
+source.normalize!
+source.expand!
 
 DIRECTIONS = {
   left: '<',
@@ -64,9 +86,25 @@ while true
       stack << source[y][x].ord
       debug "Added character. Stack is now #{stack}"
     end
+  elsif bridge
+    debug "Current location is #{x},#{y}"
+    debug "Skipping operation: #{source[y][x]}"
+    bridge = false
   else
     debug "Current location is #{x},#{y}"
     case source[y][x]
+    when '#'
+      debug "  bridge"
+      bridge = true
+    when 'p'
+      debug "  put"
+      get_y = stack.pop
+      get_x = stack.pop
+      val = stack.pop
+      debug "    x is #{get_x}"
+      debug "    y is #{get_y}"
+      debug "    val is #{val}"
+      source[get_y][get_x] = val.chr
     when '"'
       string_mode = true
     when '<','v','>','^'
@@ -83,6 +121,15 @@ while true
       else
         direction = :up
       end
+    when 'g'
+      debug "  get"
+      get_y = stack.pop
+      get_x = stack.pop
+      debug "    x is #{get_y}"
+      debug "    y is #{get_x}"
+      debug "    source row is #{source[get_y].join}"
+      debug "    char is #{source[get_y][get_x]}"
+      stack << source[get_y][get_x].ord
     when '?'
       debug "  randdir"
       direction = DIRECTIONS.keys.sample
@@ -103,6 +150,10 @@ while true
     when '$'
       debug "  discard"
       stack.pop
+    when '!'
+      debug "  NOT"
+      val = stack.pop
+      stack << (val.zero? ? 1 : 0)
     when '+','-','*','/','%'
       op = source[y][x]
       debug "  op: #{op}"
