@@ -86,12 +86,23 @@ while true
     when '?'
       debug "  randdir"
       direction = DIRECTIONS.keys.sample
+    when '_'
+      debug "  hIF"
+      top = stack.pop
+      if top.nil? || top.zero?
+        direction = :right
+      else
+        direction = :left
+      end
     when ' ',nil
       nil
     when '.'
       debug "  printInt"
       i = stack.pop
       print i
+    when '$'
+      debug "  discard"
+      stack.pop
     when '+','-','*','/','%'
       op = source[y][x]
       debug "  op: #{op}"
@@ -100,9 +111,19 @@ while true
       b = stack.pop
       debug "    got these two values: a:#{a}, b:#{b}"
       stack << b.send(op.to_sym, a)
+    when '\\'
+      debug "  switch"
+      a = stack.pop
+      b = stack.pop
+      stack << a
+      stack << b
     when '@'
       debug "  EXIT"
       exit
+    when '&'
+      stack << gets.to_i
+      debug "  getInt"
+      debug "    got result #{stack.last}"
     when ','
       debug "  printChar"
       print stack.pop.chr
